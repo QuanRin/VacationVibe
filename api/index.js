@@ -62,3 +62,8 @@ function getUserDataFromToken(req) {
     });
   });
 }
+
+app.get("/api/", (req, res) => {
+    mongoose.connect(process.env.MONGO_URL);
+    res.json("test ok");
+  });
