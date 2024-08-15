@@ -247,3 +247,39 @@ app.get("/api/", (req, res) => {
       }
     });
   });
+
+  app.get("/api/places", async (req, res) => {
+    mongoose.connect(process.env.MONGO_URL);
+    res.json(await Place.find());
+  });
+  
+  app.post("/api/bookings", async (req, res) => {
+    mongoose.connect(process.env.MONGO_URL);
+    const userData = await getUserDataFromToken(req);
+    const { place, checkIn, checkOut, numberOfGuests, name, phone, price } =
+      req.body;
+    Booking.create({
+      user: userData.id,
+      place,
+      checkIn,
+      checkOut,
+      numberOfGuests,
+      name,
+      phone,
+      price,
+    })
+      .then((doc) => {
+        res.json(doc);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+  
+  app.get("/api/bookings", async (req, res) => {
+    mongoose.connect(process.env.MONGO_URL);
+    const userData = await getUserDataFromToken(req);
+    res.json(await Booking.find({ user: userData.id }).populate("place"));
+  });
+  
+  app.listen(4000);
